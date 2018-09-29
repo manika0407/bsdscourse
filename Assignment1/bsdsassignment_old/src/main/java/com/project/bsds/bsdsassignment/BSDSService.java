@@ -13,26 +13,27 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.QueryParam;
+
 /**
  *
  * @author manika2211
  */
 @Path("/hello")
 public class BSDSService {
-    
         @GET
-	@Path("/{param}")
-	public Response getMsg(@PathParam("param") String msg) {
-		String output = "Jersey say : " + msg;
-		return Response.status(200).entity(output).build();
- 
+        @Path("/rs")
+        public Response getStatus(@QueryParam("input") String input) {
+            String output = "alive -> input: " + input;
+            return Response.status(200).entity(output).build(); 
 	}
     
         @POST
-        @Path("/postdata")
-        @Consumes(MediaType.TEXT_PLAIN)
-        public Response postText(String content){
-            return Response.status(201).entity(String.valueOf(content.length())).build();
+        @Path("/rs")
+        @Consumes(MediaType.APPLICATION_JSON)
+        public Response postText(TestRequestObject content) {
+            String output = "alive -> input: " + content.getInput();
+            return Response.status(200).entity(output).build();   
         }
        
         
