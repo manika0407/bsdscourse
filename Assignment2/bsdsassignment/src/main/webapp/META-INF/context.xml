@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/bsdsassignment2">
+    <!--<Resource name="jdbc/stepcounterdb" auth="Container" type="javax.sql.DataSource"-->
+              <!--maxActive="50" maxIdle="30" maxWait="10000"-->
+              <!--username="manika2211" password="manika2211"-->
+              <!--driverClassName="com.mysql.jdbc.Driver"-->
+              <!--url="jdbc:mysql://bsdsassignment2-stepcounter-db.cumfxxz0jzwo.us-west-2.rds.amazonaws.com:3306/bsdsassignment2"/>-->
+</Context>
