@@ -1,0 +1,67 @@
+{
+   "dataSources" : [
+      {
+         "spec" : {
+            "dataSchema" : {
+               "parser" : {
+                  "type" : "string",
+                  "parseSpec" : {
+                     "timestampSpec" : {
+                        "format" : "auto",
+                        "column" : "time"
+                     },
+                     "dimensionsSpec" : {
+                        "dimensions" : [
+                           "userId",
+                           "state",
+                           "gender"
+                        ]
+                     },
+                     "format" : "json"
+                  }
+               },
+               "dataSource" : "stepcountertest",
+               "granularitySpec" : {
+                  "segmentGranularity" : "MINUTE",
+                  "type" : "uniform",
+                  "queryGranularity" : "none"
+               },
+               "metricsSpec" : [
+                  {
+                     "type" : "count",
+                     "name" : "steprecords"
+                  },
+                  {
+                     "fieldName" : "stepCount",
+                     "type" : "longSum",
+                     "name" : "stepCount_sum"
+                  }
+               ]
+            },
+            "tuningConfig" : {
+               "maxRowsInMemory" : 100000,
+               "type" : "realtime",
+               "windowPeriod" : "PT10M",
+               "intermediatePersistPeriod" : "PT10M"
+            }
+         },
+         "properties" : {
+            "task.partitions" : "5",
+            "task.replicants" : "3",
+            "topicPattern.priority" : "1",
+            "topicPattern" : "stepcounter_test_topic"
+         }
+      }
+   ],
+   "properties" : {
+       "zookeeper.connect" : "34.220.41.48:2181",
+       "zookeeper.timeout" : "PT20S",
+       "druid.selectors.indexing.serviceName" : "druid/overlord",
+       "druid.discovery.curator.path" : "/druid/discovery",
+       "kafka.zookeeper.connect" : "34.220.41.48:2181",
+       "kafka.group.id" : "tranquility-kafka",
+       "consumer.numThreads" : "2",
+       "commit.periodMillis" : "15000",
+       "reportDropsAsExceptions" : "false"
+    }
+}

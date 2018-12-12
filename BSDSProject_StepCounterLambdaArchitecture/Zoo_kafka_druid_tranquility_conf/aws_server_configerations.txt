@@ -1,0 +1,141 @@
+frontend/Turnilo -> 34.208.226.226
+client -> 54.149.252.124
+
+zookeeper1 -> 34.218.47.83   172.31.34.217
+kafkab1
+
+zookeeper2  -> 34.220.41.48  172.31.34.164
+kafkab2
+tranquility
+
+
+zookeeper3  -> 54.203.1.137   172.31.33.161
+kafkab3
+tranquility
+
+
+zookeeper4  -> 54.187.58.57  172.31.36.144
+kafkab4
+tranquility
+
+
+zookeeper5  -> 34.214.6.125    172.31.38.153
+kafkab5
+tranquility
+
+coordinator -> 34.220.98.153  172.31.40.93
+overlord
+broker
+
+historical -> 34.220.233.82  172.31.33.218
+broker
+
+broker -> 54.213.236.183 172.31.37.75
+tranquility
+
+
+middlemanager -> 54.202.240.174  172.31.32.144
+
+
+middlemanager -> 34.222.34.88    172.31.35.31
+
+
+middlemanager -> 52.37.237.244   172.31.46.79
+
+
+middlemanager -> 54.244.154.176  172.31.34.230
+
+
+middlemanager -> 54.212.202.147  172.31.41.79
+
+
+zookeeper
+tmux a
+vim zookeeper/zookeeper.properties
+
+server.1=172.31.34.217:2888:3888
+server.2=172.31.34.164:2888:3888
+server.3=172.31.33.161:2888:3888
+server.4=172.31.36.144:2888:3888
+server.5=172.31.38.153:2888:3888
+
+mkdir zookeeper/data && echo "1" > zookeeper/data/myid
+mkdir zookeeper/logs
+kafka/bin/zookeeper-server-start.sh zookeeper/zookeeper.properties
+
+
+
+kafka
+broker.id=0
+advertised.listeners=PLAINTEXT://34.218.47.83:9092
+log.dirs=/home/ec2-user/kafka/kafka-logs
+num.partitions=3
+zookeeper.connect=172.31.34.217:2181,172.31.34.164:2181,172.31.33.161:2181,172.31.36.144:2181,172.31.38.153:2181
+
+rm -rf kafka/logs && mkdir kafka/logs && rm -rf kafka/kafka-logs/ && mkdir kafka/kafka-logs
+
+kafka/bin/kafka-server-start.sh kafka/config/server.properties
+
+
+
+druid
+jvm.properties
+-Xms1g
+-Xmx1g
+-XX:MaxDirectMemorySize=2g
+
+broker
+runtime.properties
+druid.processing.buffer.sizeBytes=128000000
+
+-XX:MaxDirectMemorySize=4g
+
+common.runtime.properties
+druid.extensions.loadList=["druid-kafka-indexing-service", "druid-s3-extensions", "mysql-metadata-storage"]
+
+druid.zk.service.host=172.31.34.217,172.31.34.164,172.31.33.161,172.31.36.144,172.31.38.153
+
+druid.metadata.storage.type=mysql
+druid.metadata.storage.connector.connectURI=jdbc:mysql://bsdsassignment2-stepcounter-db.cumfxxz0jzwo.us-west-2.rds.amazonaws.com:3306/druid
+druid.metadata.storage.connector.user=manika2211
+druid.metadata.storage.connector.password=manika2211
+
+druid.storage.type=s3
+druid.storage.bucket=bsdsproject-druid
+druid.storage.baseKey=druid/segments
+druid.s3.accessKey=AKIAJPIXKI6C4EB7MHLQ
+druid.s3.secretKey=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
+
+druid.indexer.logs.type=s3
+druid.indexer.logs.s3Bucket=bsdsproject-druid
+druid.indexer.logs.s3Prefix=druid/indexing-logs
+
+
+wget http://static.druid.io/artifacts/releases/mysql-metadata-storage-0.12.3.tar.gz
+
+java `cat server_conf/druid/coordinator/jvm.config | xargs` -cp "server_conf/druid/_common:server_conf/druid/_common/hadoop-xml:server_conf/druid/coordinator:lib/*" io.druid.cli.Main server coordinator
+
+java `cat server_conf/druid/overlord/jvm.config | xargs` -cp "server_conf/druid/_common:server_conf/druid/_common/hadoop-xml:server_conf/druid/overlord:lib/*" io.druid.cli.Main server overlord
+
+
+java `cat server_conf/druid/historical/jvm.config | xargs` -cp "server_conf/druid/_common:server_conf/druid/_common/hadoop-xml:server_conf/druid/historical:lib/*" io.druid.cli.Main server historical
+
+java `cat server_conf/druid/broker/jvm.config | xargs` -cp "server_conf/druid/_common:server_conf/druid/_common/hadoop-xml:server_conf/druid/broker:lib/*" io.druid.cli.Main server broker
+
+
+java `cat server_conf/druid/middleManager/jvm.config | xargs` -cp "server_conf/druid/_common:server_conf/druid/_common/hadoop-xml:server_conf/druid/middleManager:lib/*" io.druid.cli.Main server middleManager
+
+
+tranquility/bin/tranquility kafka -configFile tranquility/kafka_server.json
+
+"dataSource" : "stepcounter"
+kafka_server.json
+
+
+https://github.com/SparklineData/spark-druid-olap/wiki/Installing-and-Setup-Druid
+
+http://druid.io/docs/latest/tutorials/index.html
+
+http://druid.io/docs/0.8.2/configuration/index.html
+
+http://cloudurable.com/blog/kafka-tutorial-kafka-producer-advanced-java-examples/index.html
